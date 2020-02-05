@@ -1,6 +1,5 @@
 requests==2.22
 beautifulsoup4==4.8.2
-pandas==0.25
 tqdm==4.42.1
 pymongo==3.10.1
 pyyaml==5.3
