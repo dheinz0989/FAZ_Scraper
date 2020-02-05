@@ -13,8 +13,9 @@ class WebScraper:
         self.__article_class = article_class
         self.topics = None
         self.curr_topic = None
-        self.curr_link = None
-        self.curr_article_links = None
+        self.curr_topic_link = None
+        self.curr_article_link = None
+        self.curr_article_all_links = None
         self.curr_raw_article = None
 
     def get_topics(self, keep_with_base=True):
@@ -39,11 +40,14 @@ class WebScraper:
         log.info(f'Keeping all topics from list {topics}')
         self.topics = {key: val for key, val in self.topics.items() if key in topics}
 
+    def set_curr_article(self,article):
+        self.curr_article_link = article
+
     def set_topic(self, topic):
         try:
             log.info(f'Setting curren topic to {topic}')
             self.curr_topic = topic
-            self.curr_link = self.topics[topic]
+            self.curr_topic_link = self.topics[topic]
             return self
         except Exception as e:
             log.error(f'Could not set topic to {topic}. Reason: {e}')
@@ -51,13 +55,13 @@ class WebScraper:
 
     def get_articles_of_topic(self, keep_with_base=True):
         log.info(f'Fetching all articles of topic {self.curr_topic}')
-        page = requests.get(self.curr_link)
+        page = requests.get(self.curr_topic_link)
         soup = BeautifulSoup(page.content, 'html.parser')
         html = soup.find_all('a', class_=f"{self.__article_class}")
-        self.curr_article_links = [link.attrs['href'] for link in html if 'href' in link.attrs]
+        self.curr_article_all_links = [link.attrs['href'] for link in html if 'href' in link.attrs]
         if keep_with_base:
-            self.curr_article_links = [article for article in self.curr_article_links if self.root_link in article]
-        log.info(f'Successfully retrieved {len(self.curr_article_links)} different articles')
+            self.curr_article_all_links = [article for article in self.curr_article_all_links if self.root_link in article]
+        log.info(f'Successfully retrieved {len(self.curr_article_all_links)} different articles')
         return self
 
     def _get_topic_per_topic_link(self):
@@ -79,11 +83,16 @@ class WebScraper:
         return self
 
     def download(self, link):
-        # log.info(f'Downloading article from {link}')
+        log.info(f'Downloading article from {link}')
         page = requests.get(link)
         self.curr_raw_article = BeautifulSoup(page.content, 'html.parser')
         return self
 
+    def download_current_article(self):
+        #log.info(f'Downloading and parsing"{self.curr_article_link}"')
+        page = requests.get(self.curr_article_link)
+        self.curr_raw_article = BeautifulSoup(page.content, 'html.parser')
+        return self
     # def download_all_current_articles(self,*func):
     #    pass
     # for j in range()
@@ -128,11 +137,14 @@ class FAZ_Scraper(Response_Parser):
 
     def download_all_current_articles(self):
         result_list = []
-        # print(f'Downloading all articles from topic {self.curr_topic}')
-        for article in tqdm(self.curr_article_links):
-            self.download(article)
+        print(f'Downloading all articles from topic {self.curr_topic}')
+        for article in tqdm(self.curr_article_all_links):
+            self.set_curr_article(article)
+            self.download_current_article()
             self.parse_faz_article()
+            self.parsed_values['link'] = article
             result_list.append(self.parsed_values)
+            #log.info(f'Successfully parsed article and added to result list')
         return result_list
 
     def parse_faz_article(self):
@@ -141,6 +153,7 @@ class FAZ_Scraper(Response_Parser):
         nested = self.get_faz_text()
         self.parsed_values = {**base, **nested}
         self.parsed_values['section'] = self.curr_topic
+        self.parsed_values['link'] = self.curr_article_link
         self.parsed_values['newspaper'] = 'faz'
 
     def get_faz_text(self):
