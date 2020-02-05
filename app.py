@@ -1,7 +1,8 @@
 from Webscraper import FAZ_Scraper
-from utilities import Logger
+from utilities import Logger, Decorators
 from pymongo import MongoClient
 from tqdm import tqdm
+
 
 log = Logger.log
 faz_dic = {
@@ -57,6 +58,7 @@ scraper = FAZ_Scraper(root_link=faz_dic['root_link'],
                       parser=faz_base_parser,
                      advanced_parser=faz_nested_parser)
 
+@Decorators.run_time
 def run_scraper():
     client = MongoClient('localhost', 27017)
     mongo_collection = client.test_scraper
@@ -70,8 +72,11 @@ def run_scraper():
     for topic in tqdm(scraper.topics):
         scraper.set_topic(topic).get_articles_of_topic()
         results= scraper.download_all_current_articles()
-        log.info(f'Writing a total of {len(results)} into db {mongo_db} for topic {scraper.curr_topic}')
-        mongo_db.insert_many(results)
+        try:
+            log.info(f'Writing a total of {len(results)} into db {mongo_db} for topic {scraper.curr_topic}')
+            mongo_db.insert_many(results)
+        except Exception as e:
+            log.error(e)
 
 if __name__ == '__main__':
     run_scraper()
