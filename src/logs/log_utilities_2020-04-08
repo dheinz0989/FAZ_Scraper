@@ -1,0 +1,12 @@
+17:32:38,279 - file: app  - func: run_scraper - line: 29 - INFO - msg: Running the Web Scraper with the following arguments:
+Write to JSON:y
+Write to MongoDB:n
+Host:localhost
+Port:27017
+colletion:test_scraper
+database:db
+17:32:38,283 - file: Webscraper  - func: get_topics - line: 44 - INFO - msg: Retrieving all topics from webpage
+17:32:39,42 - file: Webscraper  - func: set_topic - line: 124 - INFO - msg: Setting current topic to politik
+17:32:39,43 - file: Webscraper  - func: get_articles_of_topic - line: 148 - INFO - msg: Fetching all articles of topic politik
+17:32:39,756 - file: Webscraper  - func: get_articles_of_topic - line: 161 - INFO - msg: Successfully retrieved 64 different articles
+17:32:39,757 - file: Webscraper  - func: download_all_articles_from_curr_topic - line: 288 - INFO - msg: Downloading all articles from topic politik
