@@ -21,18 +21,31 @@ def setup(host, port, collection, database):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Setup a Mongo database.")
     parser.add_argument(
-        "--host", default="localhost", help="The host the Mongo client useds to connect"
+        "--host",
+        "-hst",
+        default="localhost",
+        help="The host the Mongo client useds to connect"
     )
     parser.add_argument(
+        "-p",
         "--port",
         default=27017,
         type=int,
         help="The port used for the Mongo client connection",
     )
     parser.add_argument(
-        "--collection", default="test_collection", type=str, required=False
+        "-c",
+        "--collection",
+        default="test_collection",
+        type=str,
+        required=False
     )
-    parser.add_argument("--database", default="faz_articles", type=str, required=False)
+    parser.add_argument(
+        "--database",
+        "-d",
+        default="faz_articles",
+        type=str,
+        required=False)
     args = parser.parse_args()
     setup(args.host, args.port, args.collection, args.database)
     print(args.port)
