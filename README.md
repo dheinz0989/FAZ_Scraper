@@ -30,3 +30,38 @@ pip install requirements.txt
 ```
 # Documentation
 The documentation is currently written and can be found the [docs](https://github.com/dheinz0989/webscraper/blob/master/docs/build/html/WebScraper.html) directory. It is still empty and being updated
+
+# Usage
+The code is executed as follows:
+```
+python src/app.py 
+```
+Different parameters can be adjusted using the command line. Type
+```
+python src/app.py -h 
+```
+ for more information
+
+If You installed the pyMongo Client and want to save the data to MongoDB, you can first initialize a MongoDB database instance. This can be done as follows:
+```
+python src/setup_MongoDB.py -hst localhost -p 27017 -c FAZ_Scraper -d articles
+```
+
+To write the data into this db, you need to specify them on calling the script:
+```
+python src/app.py -json n -db y -hst localhost -p 27017 -c FAZ_Scraper -d articles
+```
+
+# Run Time
+There are several environment in which the script may run. The following are potential ways to run it:
+1. On a local machine
+2. using a virtual environment 
+3. Use a Dockerfile
+4. Deploy it in the Cloud and write the data to Cloud Object Storage
+
+# To Do
+This repository has several things which are not implemented yet. Amongs others, the following implementation are planned:
+1. Add a command line option to delete/keep topics of interest
+2. Add a Dockerfile
+3. Add functionality to write Data to Cloud Object Storage
+4. Add additional parser and attributes. 
